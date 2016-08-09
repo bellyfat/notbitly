@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+    <head>
+        <title>URL Shortener</title>
+    </head>
+    <body>
+        <div class=page>
+            <h1>URL Shortener</h1>
+
+            {% if short_url == '' %}
+            <div class="new-url">
+                <form id="long-url" method="post" action="/">
+                    <p>
+                    Enter URL to be shortened:
+                    <input type="text" name="url" />
+                    <input type="submit" value="Submit" />
+                    </p>
+                </form>
+            </div>
+
+            {% else %}
+            <div class="shortened-url">
+                <p>Here is your shortened URL: <a href="{{short_url}}"> {{short_url}}</a></p>
+            </div>
+
+            {% endif %}
+
+        </div>
+    </body>
+</html>
