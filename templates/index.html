@@ -7,7 +7,7 @@
         <div class=page>
             <h1>URL Shortener</h1>
 
-            {% if short_url == '' %}
+            {% if not short_url %}
             <div class="new-url">
                 <form id="long-url" method="post" action="/">
                     <p>
@@ -20,7 +20,7 @@
 
             {% else %}
             <div class="shortened-url">
-                <p>Here is your shortened URL: <a href="{{short_url}}"> {{short_url}}</a></p>
+                <p><a href="/1/{{short_url}}"> Here is your shortened URL </a></p>
             </div>
 
             {% endif %}

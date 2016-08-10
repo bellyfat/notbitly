@@ -11,8 +11,6 @@ def dec_to_base(num):
     alphabet = string.digits + string.ascii_letters + "$-_.+!*'(),"
     base = len(alphabet)
 
-    if base <= 0:
-        return 0
     num, rem = divmod(num, base)
     result = alphabet[rem]
     while num:
@@ -25,7 +23,6 @@ def to_base10(num):
 
     return sum(alphabet.find(x)*len(alphabet)**i for i,x in enumerate(num))
 
-# create table long_urls (id SERIAL PRIMARY KEY, url TEXT NOT NULL);
 def insert_new_url(url):
     conn = in_heroku()
     cur = conn.cursor()
@@ -42,12 +39,30 @@ def get_long_url(url_id):
     cur = conn.cursor()
 
     cur.execute('''SELECT url FROM long_urls WHERE id = '%s';''' % url_id)
-    long_url = cur.fetchone()[0]
+    try:
+        long_url = cur.fetchone()[0]
+    except:
+        long_url = False
 
     conn.commit()
     conn.close()
 
     return long_url
+
+def url_in_db(url):
+    conn = in_heroku()
+    cur = conn.cursor()
+
+    cur.execute('''SELECT id FROM long_urls WHERE url = '%s';''' % url)
+    try:
+        saved_url = cur.fetchone()[0]
+    except:
+        saved_url = False
+
+    conn.commit()
+    conn.close()
+
+    return saved_url
 
 def in_heroku():
     if 'DATABASE_URL' in os.environ and os.environ['DATABASE_URL']:
