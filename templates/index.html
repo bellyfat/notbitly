@@ -19,7 +19,15 @@
             </form>
 
         {% else %}
-            <h3><a href="/1/{{short_url}}"> Here is your shortened URL </a></h3>
+            <script>
+                var host = "http://" + location.hostname;
+                // Only uncomment the following line if deployed locally
+                // host = host + ":5000";
+
+                host = host + "/1/"+{{short_url}};
+
+                document.write("<h3><a href=/1/" + {{short_url}} + ">" + host + "</a></h3>");
+            </script>
         {% endif %}
         </div>
 
