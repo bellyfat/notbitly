@@ -1,30 +1,27 @@
 <!doctype html>
 <html>
     <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
         <title>URL Shortener</title>
     </head>
     <body>
-        <div class=page>
-            <h1>URL Shortener</h1>
 
-            {% if not short_url %}
-            <div class="new-url">
-                <form id="long-url" method="post" action="/">
-                    <p>
-                    Enter URL to be shortened:
-                    <input type="text" name="url" />
-                    <input type="submit" value="Submit" />
-                    </p>
-                </form>
-            </div>
+        <div class="form-style">
 
-            {% else %}
-            <div class="shortened-url">
-                <p><a href="/1/{{short_url}}"> Here is your shortened URL </a></p>
-            </div>
+        {% if not short_url %}
+            <form id="long-url" method="post" action="/">
+                <p>
+                Enter URL to be shortened:
+                <input type="text" name="url" autofocus />
+                <input type="submit" value="Submit" />
+                </p>
+            </form>
 
-            {% endif %}
-
+        {% else %}
+            <h3><a href="/1/{{short_url}}"> Here is your shortened URL </a></h3>
+        {% endif %}
         </div>
+
     </body>
 </html>
