@@ -45,7 +45,7 @@ def redirect_url(short_url):
 
 if __name__ == '__main__':
     if 'HEROKU_CHECK' in os.environ:
-        app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT')))
+        app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT')))
     else:
-        app.run(debug=True)
+        app.run(debug=False)
 
