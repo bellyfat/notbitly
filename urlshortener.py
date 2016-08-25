@@ -7,8 +7,9 @@ import urllib
 from urllib.parse import urlparse
 import psycopg2
 
+alphabet = string.digits + string.ascii_letters + "$-_.+!*'(),"
+
 def dec_to_base(num):
-    alphabet = string.digits + string.ascii_letters + "$-_.+!*'(),"
     base = len(alphabet)
 
     num, rem = divmod(num, base)
@@ -18,53 +19,81 @@ def dec_to_base(num):
         result = alphabet[rem] + result
     return result
 
-def to_base10(num):
-    alphabet = string.digits + string.ascii_letters + "$-_.+!*'(),"
-
+def base_to_dec(num):
     return sum(alphabet.find(x)*len(alphabet)**i for i,x in enumerate(num))
 
-def insert_new_url(url):
-    conn = in_heroku()
+def connect_db():
+    conn = database_connection()
     cur = conn.cursor()
-    cur.execute('''INSERT INTO long_urls (url) VALUES ('%s') RETURNING id;''' % url)
-    last_id = cur.fetchone()[0]
+    return conn, cur
 
+def disconnect_db(conn, cur):
     conn.commit()
     conn.close()
 
-    return last_id
+def insert_new_url(url):
+    try:
+        conn, cur = connect_db()
+
+        query = "INSERT INTO long_urls (url) VALUES (%s) RETURNING id;"
+        data = (url, )
+        cur.execute(query, data)
+
+        try:
+            last_id = cur.fetchone()[0]
+        except:
+            return False
+        finally:
+            disconnect_db(conn, cur)
+
+        return last_id
+
+    except:
+        return False
+
 
 def get_long_url(url_id):
-    conn = in_heroku()
-    cur = conn.cursor()
-
-    cur.execute('''SELECT url FROM long_urls WHERE id = '%s';''' % url_id)
     try:
-        long_url = cur.fetchone()[0]
+        conn, cur = connect_db()
+
+        query = "SELECT url FROM long_urls WHERE id = %s;"
+        data = (url_id, )
+        cur.execute(query, data)
+
+        try:
+            long_url = cur.fetchone()[0]
+        except:
+            return False
+        finally:
+            disconnect_db(conn, cur)
+
+        return long_url
+
     except:
-        long_url = False
+        return False
 
-    conn.commit()
-    conn.close()
-
-    return long_url
 
 def url_in_db(url):
-    conn = in_heroku()
-    cur = conn.cursor()
-
-    cur.execute('''SELECT id FROM long_urls WHERE url = '%s';''' % url)
     try:
-        saved_url = cur.fetchone()[0]
+        conn, cur = connect_db()
+
+        query = "SELECT id FROM long_urls WHERE url = %s;"
+        data = (url, )
+        cur.execute(query, data)
+
+        try:
+            saved_url = cur.fetchone()[0]
+        except:
+            return False
+        finally:
+            disconnect_db(conn, cur)
+
+        return saved_url
+
     except:
-        saved_url = False
+        return False
 
-    conn.commit()
-    conn.close()
-
-    return saved_url
-
-def in_heroku():
+def database_connection():
     if 'DATABASE_URL' in os.environ and os.environ['DATABASE_URL']:
         urllib.parse.uses_netloc.append('postgres')
         url = urlparse(os.environ['DATABASE_URL'])

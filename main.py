@@ -35,7 +35,7 @@ def index():
 
 @app.route('/1/<short_url>')
 def redirect_url(short_url):
-    decoded = to_base10(short_url)
+    decoded = base_to_dec(short_url)
     long_url = get_long_url(decoded)
 
     if long_url != False:
